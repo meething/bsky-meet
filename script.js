@@ -60,6 +60,11 @@ async function getHandle(did) {
     return res.handle || did;
 }
 
+async function getUserData(did) {
+    const res = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(did)}`).then(res=>res.clone().json())
+    return res;
+}
+
 function display(follows, handle) {
     // create new <ul>
     const list = document.createElement('ul');
