@@ -65,12 +65,19 @@ document.addEventListener('DOMContentLoaded', async function () {
   }
 });
 
+async function logout() {
+  await window.agent.logout()
+  Swal.fire("Logout", "You are now logged out. Thanks!");
+  window.location.href = "/"
+}
+
 async function getUserName() {
   Swal.fire({
     title: "Hey Stranger!",
-    text: "Choose a Username:",
+    text: "Login with BlueSky oAuth",
     input: "text",
-    inputPlaceholder: "you.bsky.social"
+    inputPlaceholder: "you.bsky.social",
+    confirmButtonText: "Login"
   }).then(async (result) => {
     if (result.value) {
       const username = result.value;
@@ -112,6 +119,7 @@ async function finalizeOAuth() {
     localStorage.setItem("username", window.userdata.handle ||did);
     window.getUserName = getUserName;
     // Your application can now proceed with this session
+    await sleep(200);
     start();
   } catch (err) {
     console.error("Error finalizing OAuth:", err);
@@ -856,7 +864,7 @@ var start = function() {
   
   function getRoomName() {
     Swal.fire({
-      title: "Welcome Stranger!",
+      title: "Welcome " + window.user,
       text: "Create or Join a Room",
       showCancelButton: true,
       confirmButtonText: 'Join',
@@ -868,31 +876,6 @@ var start = function() {
         var target = location.protocol + '//' + location.host + location.pathname + '?room=' + result.value;
         window.location = target;
     });
-    
-    /* 
-    const { value: formValues } = await Swal.fire({
-      title: 'Welcome Stranger!',
-      text: ' Create or Join a Room'
-      html:
-        '<input id="swal-input1" class="swal2-input" placeholder="room name">' +
-        '<input id="swal-input2" class="swal2-input" placeholder="user name">',
-      focusConfirm: false,
-      preConfirm: () => {
-        return [
-          document.getElementById('swal-input1').value,
-          document.getElementById('swal-input2').value
-        ]
-      }
-    })
-
-    if (formValues) {
-        const [room, user] = formValues;
-        if (!room || room.length < 4) room = 'ctzn';
-        result.value = result.value.toLowerCase();
-        var target = location.protocol + '//' + location.host + location.pathname + '?room=' + result.value;
-        window.location = target;
-    }
-    */
     
   }
   window.getRoomName = getRoomName;
