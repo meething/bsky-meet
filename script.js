@@ -87,10 +87,6 @@ async function getUserName() {
   }).then(async (result) => {
     if (result.value) {
       const username = result.value;
-      if (!username.includes('.') && /^\w+$/.test(username)) {
-        username = `${username}.bsky.social`;
-      }
-      
       try {
         // Resolve identity and initiate OAuth flow
         const { identity, metadata } = await resolveFromIdentity(username);
@@ -114,7 +110,7 @@ async function getUserName() {
 async function finalizeOAuth() {
   const params = new URLSearchParams(location.hash.slice(1));
   history.replaceState(null, '', location.pathname + location.search);
-
+  if (!params) return;
   try {
     const session = await finalizeAuthorization(params);
     const agent = new OAuthUserAgent(session);
@@ -122,16 +118,15 @@ async function finalizeOAuth() {
     // Store session data for use in the application
     window.xrpc = new XRPC({ handler: agent });
     window.agent = agent;
-    window.userdata = await getUserData(did);
-
     const did = agent.session.info.sub;
-    localStorage.setItem("username", window.userdata.handle ||did);
+    window.userdata = await getUserData(did);
+    
+    localStorage.setItem("username", window.userdata.handle);
     window.getUserName = getUserName;
     // Your application can now proceed with this session
-    await sleep(500);
     start();
   } catch (err) {
-    console.error("Error finalizing OAuth:", err);
+    
     getUserName()
   }
 }
@@ -151,7 +146,7 @@ async function restoreSession() {
     window.xrpc = new XRPC({ handler: agent });
     window.agent = agent;
     window.userdata = await getUserData(did);
-    localStorage.setItem("username", did);
+    localStorage.setItem("username", window.userdata.handle);
     start();
   } catch (err) {
     console.error("Error restoring session:", err);
@@ -875,7 +870,7 @@ var start = function() {
     Swal.fire({
       title: "Welcome " + window.userdata.handle,
       text: "Create or Join a Room",
-      showCancelButton: true,
+      showCancelButton: false,
       confirmButtonText: 'Join',
       input: "text",
       inputPlaceholder: "ctzn"
