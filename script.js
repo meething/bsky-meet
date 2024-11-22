@@ -121,7 +121,7 @@ async function finalizeOAuth() {
     const did = agent.session.info.sub;
     window.userdata = await getUserData(did);
     
-    localStorage.setItem("username", window.userdata.handle);
+    localStorage.setItem("username", window.userdata.displayName);
     window.getUserName = getUserName;
     // Your application can now proceed with this session
     start();
@@ -146,7 +146,7 @@ async function restoreSession() {
     window.xrpc = new XRPC({ handler: agent });
     window.agent = agent;
     window.userdata = await getUserData(did);
-    localStorage.setItem("username", window.userdata.handle);
+    localStorage.setItem("username", window.userdata.displayName);
     start();
   } catch (err) {
     console.error("Error restoring session:", err);
@@ -188,26 +188,12 @@ var start = function() {
 
   //const peerInfo = byId("peer-info");
   //const noPeersCopy = peerInfo.innerText;
-  const config = { appId: "ctzn-glitch" };
+  const config = { appId: "bsky-glitch" };
   const cursors = {};
   const roomCap = 33;
   const fruits = [
-    "🍏",
-    "🍎",
-    "🍐",
-    "🍊",
-    "🍋",
-    "🍌",
-    "🍉",
-    "🍇",
-    "🍓",
-    "🍈",
-    "🍒",
-    "🍑",
-    "🥭",
-    "🍍",
-    "🥥",
-    "🥝"
+    "🍄",
+    "🍄‍🟫"
   ];
   const randomFruit = () => fruits[Math.floor(Math.random() * fruits.length)];
 
@@ -471,7 +457,7 @@ var start = function() {
   // EXPERIMENTAL ROOM INDEXING!
   async function allrooms(n) {
     const ns = "rooms";
-    rooms = joinRoom({ appId: "ctzn-glitch-index" }, ns);
+    rooms = joinRoom({ appId: "bsky-glitch-index" }, ns);
     window.rooms = rooms;
     rooms.onPeerJoin(addRooms);
     rooms.onPeerLeave(removeRooms);
@@ -619,7 +605,7 @@ var start = function() {
     el.style.float = "left";
     el.className = `cursor${isSelf ? " self" : ""}`;
     el.style.left = el.style.top = "-99px";
-    img.src = window.userdata.avatar || "static/hand.png";
+    img.src = "favicon.png";
     txt.innerText = isSelf ? "you" : id.slice(0, 4);
     el.appendChild(img);
     el.appendChild(txt);
@@ -689,13 +675,6 @@ var start = function() {
     if (userName && sendCmd) {
       sendCmd({ peerId: selfId, cmd: "username", username: userName });
     }
-    /*
-    peerInfo.innerHTML = count
-      ? `Right now <em>${count}</em> other peer${
-          count === 1 ? " is" : "s are"
-        } connected with you. Send them some fruit.`
-      : noPeersCopy;
-    */
   }
 
   function updateChat(data, id) {
@@ -868,14 +847,14 @@ var start = function() {
   
   function getRoomName() {
     Swal.fire({
-      title: "Welcome " + window.userdata.handle,
+      title: "Welcome " + window.userdata.displayName,
       text: "Create or Join a Room",
       showCancelButton: false,
       confirmButtonText: 'Join',
       input: "text",
-      inputPlaceholder: "ctzn"
+      inputPlaceholder: "bsky"
     }).then(result => {
-        if (!result.value || result.value.length < 4) result.value = 'ctzn';
+        if (!result.value || result.value.length < 4) result.value = 'bsky';
         result.value = result.value.toLowerCase();
         var target = location.protocol + '//' + location.host + location.pathname + '?room=' + result.value;
         window.location = target;
