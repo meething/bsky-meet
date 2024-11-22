@@ -14,28 +14,6 @@ configureOAuth({
 	},
 });
 
-async function login() {
-    const username = document.getElementById("username").value
-    const { identity, metadata } = await resolveFromIdentity(username);
-    const authUrl = await createAuthorizationUrl({
-        metadata: metadata,
-        identity: identity,
-        scope: 'atproto transition:generic transition:chat.bsky',
-    });
-    window.location.assign(authUrl);
-    await sleep(200);
-}
-
-async function finalize() {
-    const params = new URLSearchParams(location.hash.slice(1));
-    history.replaceState(null, '', location.pathname + location.search);
-    const session = await finalizeAuthorization(params);
-    const agent = new OAuthUserAgent(session);
-    return agent
-}
-
-window.login = login;
-
 //export interface XRPCRequestOptions {
 //	type: 'get' | 'post';
 //	nsid: string;
@@ -66,43 +44,6 @@ async function getUserData(did) {
     return res;
 }
 
-function display(follows, handle) {
-    // create new <ul>
-    const list = document.createElement('ul');
-    for (const follow of follows) {
-        const item = document.createElement('li');
-        item.textContent = follow.handle;
-        list.appendChild(item);
-    }
-    document.getElementById("following").textContent = "10 people you're following:"
-    document.getElementById("following").appendChild(list);
-  
-    document.getElementById("username").value = handle;
-}
-
-async function XhandleOauth() {
-    if (!location.href.includes('state')) {
-        return;
-    }
-    const agent = await finalize();
-    window.xrpc = new XRPC({handler: agent});
-    window.agent = agent;
-}
-
-async function XrestoreSession() {
-    const sessions = localStorage.getItem('atcute-oauth:sessions');
-    if (!sessions) {
-        return;
-    }
-    const did = Object.keys(JSON.parse(sessions))[0]
-    window.did = await getHandle(did);
-    const session = await getSession(did, { allowStale: true });
-    const agent = new OAuthUserAgent(session)
-    window.xrpc = new XRPC({handler: agent});
-    window.agent = agent;
-    window.userdata = getUserData(did);
-
-}
 
 /*
 document.addEventListener('DOMContentLoaded', async function() {
@@ -128,7 +69,8 @@ async function getUserName() {
   Swal.fire({
     title: "Hey Stranger!",
     text: "Choose a Username:",
-    input: "text"
+    input: "text",
+    inputPlaceholder: "you.bsky.social"
   }).then(async (result) => {
     if (result.value) {
       const username = result.value;
@@ -167,13 +109,13 @@ async function finalizeOAuth() {
     window.userdata = await getUserData(did);
 
     const did = agent.session.info.sub;
-    localStorage.setItem("username", did);
+    localStorage.setItem("username", window.userdata.handle ||did);
     window.getUserName = getUserName;
     // Your application can now proceed with this session
     start();
   } catch (err) {
     console.error("Error finalizing OAuth:", err);
-    Swal.fire("Error", "Failed to complete login. Please try again.", "error");
+    getUserName()
   }
 }
 
