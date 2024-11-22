@@ -70,6 +70,7 @@ async function logout() {
   Swal.fire("Logout", "You are now logged out. Thanks!");
   window.location.href = "/"
 }
+window.logout = logout;
 
 async function getUserName() {
   Swal.fire({
@@ -864,7 +865,7 @@ var start = function() {
   
   function getRoomName() {
     Swal.fire({
-      title: "Welcome " + window.user,
+      title: "Welcome " + window.userdata.handle,
       text: "Create or Join a Room",
       showCancelButton: true,
       confirmButtonText: 'Join',
