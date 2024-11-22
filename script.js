@@ -66,9 +66,14 @@ document.addEventListener('DOMContentLoaded', async function () {
 });
 
 async function logout() {
-  await window.agent.logout()
-  Swal.fire("Logout", "You are now logged out. Thanks!");
-  window.location.href = "/"
+  try {
+    await window.agent.signOut()
+    Swal.fire("Logout", "You are now logged out. Thanks!", "");
+    window.location.href = "/"
+  } catch(e){
+    Swal.fire("Logout", "You are now logged out. Thanks!", "");
+    window.location.href = "/"
+  }
 }
 window.logout = logout;
 
@@ -82,6 +87,9 @@ async function getUserName() {
   }).then(async (result) => {
     if (result.value) {
       const username = result.value;
+      if (!username.includes('.') && /^\w+$/.test(username)) {
+        username = `${username}.bsky.social`;
+      }
       
       try {
         // Resolve identity and initiate OAuth flow
@@ -120,7 +128,7 @@ async function finalizeOAuth() {
     localStorage.setItem("username", window.userdata.handle ||did);
     window.getUserName = getUserName;
     // Your application can now proceed with this session
-    await sleep(200);
+    await sleep(500);
     start();
   } catch (err) {
     console.error("Error finalizing OAuth:", err);
