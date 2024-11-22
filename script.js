@@ -63,10 +63,11 @@ document.addEventListener('DOMContentLoaded', async function () {
   if (!window.xrpc) {
     await finalizeOAuth();
   }
-  
-  requestNotificationPermission();
-  
+    
 });
+
+document.addEventListener('DOMContentLoaded', requestNotificationPermission);
+
 
 async function logout() {
   try {
@@ -537,11 +538,10 @@ var start = function() {
           updateChat({ msg: 'joined the room', username: peerAlias[id] }, selfId);
           notifyMe(peerAlias[id]+" joined")
           if (Notification.permission === 'granted') {
-    new Notification("New Room Joiner", {
-      body: `${username} has joined the room.`,
-      icon: '/path-to-your-icon.png', // Optional: Add a custom icon
-    });
-  }
+            new Notification("New User Joined", {
+              body: `${peerAlias[id]} has joined the room`
+            });
+          }
           
         }
         var el = byId("name_" + id);
