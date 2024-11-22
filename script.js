@@ -56,13 +56,8 @@ async function getFollowing(xrpc) {
 }
 
 async function getHandle(did) {
-    try {
-      const res = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(did)}`);
-      console.log(res);
-      return res.ok ? res.json().handle : did;
-    } catch (err) {
-      return did;
-    }
+    const res = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(did)}`).then(res=>res.clone().json())
+    return res.handle || did;
 }
 
 function display(follows, handle) {
@@ -108,7 +103,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!window.xrpc) {
         return;
     }
-    //const handle = await getHandle(xrpc);
     const follows = await getFollowing(xrpc);
     display(follows, window.did);
 });
