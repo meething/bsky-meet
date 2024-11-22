@@ -95,6 +95,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!window.xrpc) {
         return;
     }
+    console.log(xrpc);
     const follows = await getFollowing(xrpc)
     display(follows);
 });
