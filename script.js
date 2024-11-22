@@ -94,6 +94,7 @@ async function restoreSession() {
     const agent = new OAuthUserAgent(session)
     window.xrpc = new XRPC({handler: agent});
     window.agent = agent;
+
 }
 
 
