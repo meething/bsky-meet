@@ -55,15 +55,14 @@ async function getFollowing(xrpc) {
     return following.data.follows;
 }
 
-async function getHandle(xrpc) {
-    const handle = await xrpc.request({
-        type: 'get',
-        nsid: 'app.bsky.actor.getProfile',
-        params: {
-            actor: agent.session.info.sub,
-        }
-    });
-    return handle.data.handle;
+async function getHandle(did) {
+    try {
+      const res = await fetch(`https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile?actor=${encodeURIComponent(did)}`);
+      console.log(res);
+      return res.ok ? res.json().handle : did;
+    } catch (err) {
+      return did;
+    }
 }
 
 function display(follows, handle) {
@@ -77,7 +76,7 @@ function display(follows, handle) {
     document.getElementById("following").textContent = "10 people you're following:"
     document.getElementById("following").appendChild(list);
   
-    document.getElementById("username").textContent = handle;
+    document.getElementById("username").value = handle;
 }
 
 async function handleOauth() {
@@ -95,7 +94,7 @@ async function restoreSession() {
         return;
     }
     const did = Object.keys(JSON.parse(sessions))[0]
-    window.did = did;
+    window.did = await getHandle(did);
     const session = await getSession(did, { allowStale: true });
     const agent = new OAuthUserAgent(session)
     window.xrpc = new XRPC({handler: agent});
@@ -109,8 +108,7 @@ document.addEventListener('DOMContentLoaded', async function() {
     if (!window.xrpc) {
         return;
     }
-    console.log(xrpc);
-    const handle = await getHandle(xrpc);
+    //const handle = await getHandle(xrpc);
     const follows = await getFollowing(xrpc);
-    display(follows, handle);
+    display(follows, window.did);
 });
