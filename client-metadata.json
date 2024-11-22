@@ -1,11 +1,11 @@
 {
-  "client_id": "https://bsky-oauth-example.jvns.ca/client-metadata.json",
-  "client_uri": "https://bsky-oauth-example.jvns.ca",
+  "client_id": "https://bsky-oauth.glitch.me/client-metadata.json",
+  "client_uri": "https://bsky-oauth.glitch.me",
   "redirect_uris": [
-    "https://bsky-oauth-example.jvns.ca"
+    "https://bsky-oauth.glitch.me"
   ],
   "application_type": "web",
-  "client_name": "Example Browser App",
+  "client_name": "Example Glitch App",
   "dpop_bound_access_tokens": true,
   "grant_types": [
     "authorization_code",

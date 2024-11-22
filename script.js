@@ -4,7 +4,7 @@ import { createAuthorizationUrl } from '@atcute/oauth-browser-client';
 import { XRPC } from '@atcute/client';
 import { OAuthUserAgent, finalizeAuthorization, getSession } from '@atcute/oauth-browser-client';
 
-const APP_URL="https://bsky-oauth-example.jvns.ca"
+const APP_URL="https://bsky-oauth.glitch.me"
 
 configureOAuth({
 	metadata: {
@@ -49,7 +49,7 @@ async function getFollowing(xrpc) {
         nsid: 'app.bsky.graph.getFollows',
         params: {
             actor: agent.session.info.sub,
-            limit: 5
+            limit: 10
         }
     });
     return following.data.follows;
@@ -63,7 +63,7 @@ function display(follows) {
         item.textContent = follow.handle;
         list.appendChild(item);
     }
-    document.getElementById("following").textContent = "5 people you're following:"
+    document.getElementById("following").textContent = "10 people you're following:"
     document.getElementById("following").appendChild(list);
 }
 
