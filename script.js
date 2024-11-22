@@ -104,7 +104,7 @@ async function XrestoreSession() {
 
 }
 
-
+/*
 document.addEventListener('DOMContentLoaded', async function() {
     await handleOauth();
     await restoreSession();
@@ -113,6 +113,15 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
     const follows = await getFollowing(xrpc);
     display(follows, window.did);
+});
+*/
+
+document.addEventListener('DOMContentLoaded', async function () {
+  await restoreSession();
+
+  if (!window.xrpc) {
+    await finalizeOAuth();
+  }
 });
 
 async function getUserName() {
@@ -155,12 +164,13 @@ async function finalizeOAuth() {
     // Store session data for use in the application
     window.xrpc = new XRPC({ handler: agent });
     window.agent = agent;
+    window.userdata = await getUserData(did);
 
     const did = agent.session.info.sub;
     localStorage.setItem("username", did);
-
-    Swal.fire("Welcome!", `Logged in as ${did}`, "success");
+    window.getUserName = getUserName;
     // Your application can now proceed with this session
+    start();
   } catch (err) {
     console.error("Error finalizing OAuth:", err);
     Swal.fire("Error", "Failed to complete login. Please try again.", "error");
@@ -181,7 +191,9 @@ async function restoreSession() {
 
     window.xrpc = new XRPC({ handler: agent });
     window.agent = agent;
+    window.userdata = await getUserData(did);
     localStorage.setItem("username", did);
+    start();
   } catch (err) {
     console.error("Error restoring session:", err);
   }
@@ -270,17 +282,12 @@ var start = function() {
   const urlParams = new URLSearchParams(queryString);
   
   var checkUsername = function() {
-    if (urlParams.has("username")) {
-      userName = urlParams.get("username");
-      //console.log("set localstorage");
-      localStorage.setItem("username", userName);
-    } else {
-      if (localStorage.getItem("username")) {
+    if (localStorage.getItem("username")) {
         userName = localStorage.getItem("username");
       } else {
         getUserName();
       }
-    }
+    
   }
   checkUsername();
   
@@ -658,7 +665,7 @@ var start = function() {
     el.style.float = "left";
     el.className = `cursor${isSelf ? " self" : ""}`;
     el.style.left = el.style.top = "-99px";
-    img.src = "static/hand.png";
+    img.src = window.userdata.avatar || "static/hand.png";
     txt.innerText = isSelf ? "you" : id.slice(0, 4);
     el.appendChild(img);
     el.appendChild(txt);
@@ -1018,4 +1025,4 @@ var start = function() {
   
 };
 
-start();
+
