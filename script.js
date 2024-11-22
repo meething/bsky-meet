@@ -63,6 +63,9 @@ document.addEventListener('DOMContentLoaded', async function () {
   if (!window.xrpc) {
     await finalizeOAuth();
   }
+  
+  requestNotificationPermission();
+  
 });
 
 async function logout() {
@@ -153,7 +156,19 @@ async function restoreSession() {
   }
 }
 
-
+function requestNotificationPermission() {
+  if ('Notification' in window) {
+    Notification.requestPermission().then(permission => {
+      if (permission === 'granted') {
+        console.log('Notification permission granted.');
+      } else {
+        console.warn('Notification permission denied.');
+      }
+    });
+  } else {
+    console.error('Notifications are not supported by this browser.');
+  }
+}
 
 var start = function() {
   const byId = document.getElementById.bind(document);
@@ -521,6 +536,13 @@ var start = function() {
           peerAlias[id] = data.username;
           updateChat({ msg: 'joined the room', username: peerAlias[id] }, selfId);
           notifyMe(peerAlias[id]+" joined")
+          if (Notification.permission === 'granted') {
+    new Notification("New Room Joiner", {
+      body: `${username} has joined the room.`,
+      icon: '/path-to-your-icon.png', // Optional: Add a custom icon
+    });
+  }
+          
         }
         var el = byId("name_" + id);
         if (el) el.innerText = data.username;
