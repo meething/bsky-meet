@@ -55,7 +55,18 @@ async function getFollowing(xrpc) {
     return following.data.follows;
 }
 
-function display(follows) {
+async function getHandle(xrpc) {
+    const handle = await xrpc.request({
+        type: 'get',
+        nsid: 'app.bsky.actor.getProfile',
+        params: {
+            actor: agent.session.info.sub,
+        }
+    });
+    return handle.data.handle;
+}
+
+function display(follows, handle) {
     // create new <ul>
     const list = document.createElement('ul');
     for (const follow of follows) {
@@ -65,6 +76,8 @@ function display(follows) {
     }
     document.getElementById("following").textContent = "10 people you're following:"
     document.getElementById("following").appendChild(list);
+  
+    document.getElementById("username").textContent = handle;
 }
 
 async function handleOauth() {
@@ -82,6 +95,7 @@ async function restoreSession() {
         return;
     }
     const did = Object.keys(JSON.parse(sessions))[0]
+    window.did = did;
     const session = await getSession(did, { allowStale: true });
     const agent = new OAuthUserAgent(session)
     window.xrpc = new XRPC({handler: agent});
@@ -96,6 +110,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         return;
     }
     console.log(xrpc);
-    const follows = await getFollowing(xrpc)
-    display(follows);
+    const handle = await getHandle(xrpc);
+    const follows = await getFollowing(xrpc);
+    display(follows, handle);
 });
