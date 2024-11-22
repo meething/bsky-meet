@@ -1,10 +1,11 @@
+import {joinRoom, selfId} from 'https://esm.run/trystero@0.20.0'
 import { configureOAuth } from '@atcute/oauth-browser-client';
 import { resolveFromIdentity } from '@atcute/oauth-browser-client';
 import { createAuthorizationUrl } from '@atcute/oauth-browser-client';
 import { XRPC } from '@atcute/client';
 import { OAuthUserAgent, finalizeAuthorization, getSession } from '@atcute/oauth-browser-client';
 
-const APP_URL="https://bsky-oauth.glitch.me"
+const APP_URL="https://bsky-meet.glitch.me"
 
 configureOAuth({
 	metadata: {
@@ -99,6 +100,7 @@ async function restoreSession() {
     const agent = new OAuthUserAgent(session)
     window.xrpc = new XRPC({handler: agent});
     window.agent = agent;
+    window.userdata = getUserData(did);
 
 }
 

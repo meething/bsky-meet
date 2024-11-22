@@ -1,11 +1,11 @@
 {
-  "client_id": "https://bsky-oauth.glitch.me/client-metadata.json",
-  "client_uri": "https://bsky-oauth.glitch.me",
+  "client_id": "https://bsky-meet.glitch.me/client-metadata.json",
+  "client_uri": "https://bsky-meet.glitch.me",
   "redirect_uris": [
-    "https://bsky-oauth.glitch.me"
+    "https://bsky-meet.glitch.me"
   ],
   "application_type": "web",
-  "client_name": "Example Glitch App",
+  "client_name": "bSky Meething",
   "dpop_bound_access_tokens": true,
   "grant_types": [
     "authorization_code",
